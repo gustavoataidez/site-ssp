@@ -8,6 +8,7 @@
 
 $container_class = apply_filters( 'neve_container_class_filter', 'container', 'single-post' );
 
+
 get_header();
 
 ?>
