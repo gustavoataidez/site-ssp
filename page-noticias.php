@@ -39,6 +39,7 @@ get_header();
                 <div class="col">
                   <div class="post-content">
                     <div class="entry-meta">
+                        
                         <?php
                         // Exibir categoria com estilo azul
                         $categories = get_the_category();
