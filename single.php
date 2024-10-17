@@ -17,21 +17,20 @@ get_header();
 			<article id="post-<?php echo esc_attr( get_the_ID() ); ?>"
 					class="<?php echo esc_attr( join( ' ', get_post_class( 'nv-single-post-wrap col' ) ) ); ?>">
 				
-						<?php if ( get_field('titulo') ) : ?>
-					<div class="entry-header" style="padding-bottom:0px;">
+						
+					<div class="entry-header" style="padding-bottom:0px;margin-bottom:0px;">
 					<div class="nv-title-meta-wrap" style="">
-					<h1 class="title entry-title"> <?php echo get_field('titulo'); ?> </h1>
+					<h1 class="title entry-title"> <?php echo the_title(); ?> </h1>
 					<div class="post-meta" style="font-size: 0.9em;padding-bottom:30px;">
 					<?php echo get_the_date('j \d\e F \d\e Y'); ?> /
-					<?php the_category(', '); ?>
+					<?php the_category(', '); ?> / <?php the_category_ID(); ?>
 					</div>
 					</div>
-						<h3 style="font-style: italic"> <?php echo get_field('subtitulo'); ?> </h3>
-					</div>
-					
+						<?php if ( get_field('subtitulo') ) : ?>
+							<h3 style="font-style: italic"> <?php echo get_field('subtitulo'); ?> </h3>	
 						<?php endif; ?>
-				
-	
+					</div>
+		
 				
 				<?php
 				/**
