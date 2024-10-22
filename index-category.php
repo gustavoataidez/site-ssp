@@ -170,19 +170,24 @@ $load_before_after_hooks = get_theme_mod( 'neve_blog_archive_layout', 'grid' ) =
 				
 <div id="primary" class="content-area">
     <div class="site-main">
-				<?php
-// Definir parâmetros para a query
+				
+
+	<?php
+// Obter a categoria atual da página
+$category = get_category( get_query_var( 'cat' ) );
+$cat_id = $category->cat_ID;
+
+// Definir parâmetros para a query, incluindo o ID da categoria atual
 $args = array(
-    'post_type' => 'noticia',
+    'post_type'      => 'noticia',
     'posts_per_page' => 10, // Número de posts por página
-    'paged' => get_query_var('paged') ? get_query_var('paged') : 1 // Página atual
+    'paged'          => get_query_var('paged') ? get_query_var('paged') : 1, // Página atual
+    'cat'            => $cat_id // Filtrar pela categoria atual
 );
+
 $custom_query = new WP_Query( $args );
 
 if ( $custom_query->have_posts() ) :
-
-    // Armazenar o título da página
-    $page_title = trim( wp_title( '', false ) );
 
     // Loop para exibir os posts personalizados
     while ( $custom_query->have_posts() ) : $custom_query->the_post();
@@ -190,20 +195,20 @@ if ( $custom_query->have_posts() ) :
         // Obter a primeira categoria do post
         $categories = get_the_category();
         if ( ! empty( $categories ) ) {
-            $first_category = $categories[0]->name; // Nome da primeira categoria
+            $first_category_id = $categories[0]->term_id; // ID da primeira categoria
         } else {
-            $first_category = ''; // Caso não tenha categoria, define como vazio
+            $first_category_id = ''; // Caso não tenha categoria, define como vazio
         }
 
-        // Verificar se o título da página é igual ao nome da categoria
-        if ( $page_title === $first_category ) :
+        // Verificar se o ID da primeira categoria do post é igual ao ID da categoria da página
+        if ( $cat_id === $first_category_id ) :
             ?>
 
             <!-- POST NOVO -->
             <a href="<?php the_permalink(); ?>" >
                 <div class="container">
                     <div class="row">
-                        <div style="max-width: 100%;" class="col">
+                        <div class="col">
                             <?php if ( has_post_thumbnail() ) : ?>
                                 <div class="post-thumbnail">
                                     <?php the_post_thumbnail('thumbnail'); ?>
@@ -216,13 +221,13 @@ if ( $custom_query->have_posts() ) :
                                     <?php
                                     // Exibir categoria com estilo azul
                                     if ( ! empty( $categories ) ) {
-                                        echo '<span class="category" id="categoria_noticia">' . esc_html( $first_category ) . '</span>';
+                                        echo '<span class="category" id="categoria_noticia">' . esc_html( $categories[0]->name ) . '</span>';
                                     }
                                     ?>
                                     <span class="post-date"><?php echo get_the_date(); ?></span>
                                 </div>
                                 <h3 class="entry-title"><?php the_title(); ?></h3>
-                                <div style="margin-bottom: 50px;" class="entry-content">
+                                <div class="entry-content">
                                     <?php the_excerpt(); ?>
                                 </div><!-- .entry-content -->
                             </div><!-- .post-content -->
@@ -232,9 +237,20 @@ if ( $custom_query->have_posts() ) :
             </a>
 
             <?php
-        endif; // Fim da verificação de categoria e título da página
+        endif; // Fim da verificação de categoria
 
     endwhile;
+
+    // Paginação
+    $big = 999999999; // valor alto o suficiente para garantir que a saída da paginação seja formatada corretamente
+    echo '<div class="pagination-wrapper">';
+    echo paginate_links( array(
+        'base'    => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+        'format'  => '?paged=%#%',
+        'current' => max( 1, get_query_var('paged') ),
+        'total'   => $custom_query->max_num_pages
+    ) );
+    echo '</div>';
 
     wp_reset_postdata();
 
@@ -243,6 +259,7 @@ else :
     echo 'Nenhum post encontrado.';
 endif;
 ?>
+
 
 </div>
 </div>
