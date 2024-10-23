@@ -252,6 +252,8 @@ if ( $custom_query->have_posts() ) :
     ) );
     echo '</div>';
 
+	//Saber $custom_query está puxando e quais os argumentos para o WP_Query
+
     wp_reset_postdata();
 
 else :
